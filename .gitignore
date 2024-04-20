@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# macOS system files
+*.DS_Store
+*.AppleDouble
+*.LSOverride
+
+#build folders
+./build
+./cmake-build-debug
+./cmake-build-release
