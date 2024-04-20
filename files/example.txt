@@ -1,0 +1,51 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+#pragma pack(push, 1) // Pack struct members without padding
+struct BMPHeader {
+    char fileType[2] = {'B', 'M'}; // File type signature
+    uint32_t fileSize; // Total file size
+    uint32_t reserved = 0; // Reserved (usually set to 0)
+    uint32_t dataOffset; // Offset to pixel data
+    uint32_t headerSize = 40; // Size of header (40 bytes for BMP)
+    uint32_t width; // Image width
+    uint32_t height; // Image height
+    uint16_t planes = 1; // Number of color planes
+    uint16_t bitsPerPixel = 24; // Bits per pixel (24 for RGB)
+    uint32_t compression = 0; // Compression method (0 for uncompressed)
+    uint32_t dataSize; // Size of pixel data
+    int32_t horizontalResolution = 2835; // Pixels per meter (72 DPI)
+    int32_t verticalResolution = 2835; // Pixels per meter (72 DPI)
+    uint32_t colorsUsed = 0; // Number of colors in palette (0 for truecolor)
+    uint32_t importantColors = 0; // Number of important colors (0 for all)
+};
+#pragma pack(pop) // Restore default struct packing
+
+int main() {
+    // Create BMP header
+    BMPHeader bmpHeader;
+    bmpHeader.fileSize = sizeof(BMPHeader); // Size of header
+    bmpHeader.dataOffset = sizeof(BMPHeader); // Offset to pixel data
+    bmpHeader.width = 100; // Image width
+    bmpHeader.height = 100; // Image height
+    bmpHeader.dataSize = bmpHeader.width * bmpHeader.height * 3; // Size of pixel data (3 bytes per pixel)
+
+    // Create pixel data (dummy example)
+    std::vector<uint8_t> pixelData(bmpHeader.dataSize, 0xFF); // Set all pixels to white (RGB: 255, 255, 255)
+
+    // Write BMP file
+    std::ofstream outFile("output.bmp", std::ios::binary);
+    if (!outFile.is_open()) {
+        std::cerr << "Error: Unable to open file." << std::endl;
+        return 1;
+    }
+
+    outFile.write(reinterpret_cast<const char*>(&bmpHeader), sizeof(BMPHeader)); // Write BMP header
+    outFile.write(reinterpret_cast<const char*>(pixelData.data()), bmpHeader.dataSize); // Write pixel data
+
+    outFile.close();
+    std::cout << "BMP file generated successfully." << std::endl;
+
+    return 0;
+}

@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.15)
+project(MyProject)
+
+# Set minimum macOS version
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum macOS version" FORCE)
+set(CMAKE_OSX_ARCHITECTURES "x86_64;i386" CACHE STRING "Build architectures" FORCE)
+
+
+

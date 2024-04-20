@@ -1,0 +1,25 @@
+----------------------------------------
+| BMP Header (54 bytes)               |
+----------------------------------------
+| File Type (2 bytes)                  |
+| File Size (4 bytes)                  |
+| Reserved (4 bytes)                   |
+| Data Offset (4 bytes)                |
+| Header Size (4 bytes)                |
+| Image Width (4 bytes)                |
+| Image Height (4 bytes)               |
+| Planes (2 bytes)                     |
+| Bits Per Pixel (2 bytes)             |
+| Compression (4 bytes)                |
+| Data Size (4 bytes)                  |
+| Horizontal Resolution (4 bytes)      |
+| Vertical Resolution (4 bytes)        |
+| Colors Used (4 bytes)                |
+| Important Colors (4 bytes)           |
+----------------------------------------
+| Pixel Data                           |
+----------------------------------------
+| Pixel 1 (Blue, Green, Red) (3 bytes)|
+| Pixel 2 (Blue, Green, Red) (3 bytes)|
+| ...                                  |
+----------------------------------------

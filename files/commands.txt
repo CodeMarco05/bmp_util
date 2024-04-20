@@ -1,0 +1,10 @@
+//gives file in hex with numbers and text representation
+xxd <filename> 
+-g groups number of bytes
+-p without numbers and translation into ascii
+
+//outputs a hex file with the content
+xxd <file> > <file.hex>
+
+//compares two hex files
+diff < <fileone> < <filetwo>
