@@ -4,8 +4,46 @@
 
 namespace BMP {
 
-  bool Generator::generate(const std::string &filename, uint32_t width,
-                           uint32_t height, const std::vector<Pixel> *pixelData) {
+  std::ostream &operator<<(std::ostream &os, const BMPHeader &header) {
+    os << "BMPHeader {\n"
+       << "  fileType: " << header.fileType[0] << header.fileType[1] << "\n"
+       << "  fileSize: " << header.fileSize << "\n"
+       << "  offset: " << header.offset << "\n"
+       << "  headerSize: " << header.headerSize << "\n"
+       << "  width: " << header.width << "\n"
+       << "  height: " << header.height << "\n"
+       << "  planes: " << header.planes << "\n"
+       << "  bitsPerPixel: " << header.bitsPerPixel << "\n"
+       << "  compression: " << header.compression << "\n"
+       << "  dataSize: " << header.dataSize << "\n"
+       << "  horizontalResolution: " << header.horizontalResolution << "\n"
+       << "  verticalResolution: " << header.verticalResolution << "\n"
+       << "  colorsUsed: " << header.colorsUsed << "\n"
+       << "  importantColors: " << header.importantColors << "\n"
+       << "}";
+    return os;
+  }
+
+  std::ostream& operator<<(std::ostream& os, const Pixel& pixel) {
+    os << "Pixel { "
+       << "blue: " << static_cast<int>(pixel.blue) << ", "
+       << "green: " << static_cast<int>(pixel.green) << ", "
+       << "red: " << static_cast<int>(pixel.red)
+       << " }";
+    return os;
+  }
+
+  std::ostream& operator<<(std::ostream& os, const std::vector<Pixel>& pixels) {
+    os << "{ ";
+    for (Pixel pixel : pixels) {
+      os << pixel << ", ";
+    }
+    os << "}";
+    return os;
+  }
+
+  ImageData Generator::generate(uint32_t width,
+                           uint32_t height, const std::vector<Pixel> &pixelData) {
     // Calculate the size of the pixel data
     const uint32_t dataSize = width * height * 3; // 3 bytes per pixel (RGB)
 
@@ -21,7 +59,10 @@ namespace BMP {
     header.height = height;
     header.dataSize = dataSize;
 
-    // Open the output file
+    ImageData data = ImageData(pixelData, header);
+    return data;
+
+    /*// Open the output file
     std::ofstream outFile(filename, std::ios::binary);
     if (!outFile.is_open()) {
       std::cerr << "Error: Unable to open file." << '\n';
@@ -35,10 +76,10 @@ namespace BMP {
     outFile.write(reinterpret_cast<const char *>(pixelData->data()), dataSize);
 
     // Close the output file
-    outFile.close();
-
-    return true;
+    outFile.close();*/
   }
+
+
 
   std::vector<uint8_t> Reader::readBytes(const std::string& fileName) {
     std::vector<uint8_t> data;
@@ -85,4 +126,5 @@ namespace BMP {
     }
     return sum;
   }
-} // namespace BMP
+
+  } // namespace BMP

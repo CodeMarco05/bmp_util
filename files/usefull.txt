@@ -6,4 +6,16 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum macOS version" FORC
 set(CMAKE_OSX_ARCHITECTURES "x86_64;i386" CACHE STRING "Build architectures" FORCE)
 
 
+----------------------------
+cmake_minimum_required(VERSION 3.0)
+project(MyProject)
+
+# Add the directory containing the library headers
+include_directories(/path/to/library/include)
+
+# Add the executable target
+add_executable(my_program main.cpp)
+
+# Link the static library
+target_link_libraries(my_program /path/to/library/libexample.a)
 

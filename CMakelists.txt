@@ -6,7 +6,8 @@ add_executable(
         bmp
         src/main.cpp
         src/bmp.cpp
-        src/commandline.cpp
 )
 
 target_include_directories(bmp PRIVATE ${PROJECT_SOURCE_DIR}/headers)
+
+add_library(bmp_lib src/bmp.cpp headers/bmp.h)
