@@ -25,7 +25,7 @@ namespace BMP {
     return os;
   }
 
-  std::ostream& operator<<(std::ostream& os, const Pixel& pixel) {
+  std::ostream &operator<<(std::ostream &os, const Pixel &pixel) {
     os << "Pixel { "
        << "blue: " << static_cast<int>(pixel.blue) << ", "
        << "green: " << static_cast<int>(pixel.green) << ", "
@@ -34,18 +34,19 @@ namespace BMP {
     return os;
   }
 
-  std::ostream& operator<<(std::ostream& os, const std::vector<Pixel>& pixels) {
+  std::ostream &operator<<(std::ostream &os, const std::vector<Pixel> &pixels) {
     os << "{ ";
-    for (Pixel pixel : pixels) {
+    for (Pixel pixel: pixels) {
       os << pixel << ", ";
     }
     os << "}";
     return os;
   }
+
   ImageData Generator::generate(uint32_t width,
-                           uint32_t height, const std::vector<Pixel> &pixelData) {
+                                uint32_t height, const std::vector<Pixel> &pixelData) {
     bool check = checkPixelDimensions(width, height, pixelData);
-    if(!check){
+    if (!check) {
       return ImageData();
     }
 
@@ -86,17 +87,18 @@ namespace BMP {
   }
 
   bool Generator::checkPixelDimensions(uint32_t width, uint32_t height, const std::vector<Pixel> &pixelData) {
-    if(width*height == pixelData.size()){
+    if (width * height == pixelData.size()) {
       return true;
     }
     return false;
   }
 
-  ImageData Generator::generate(uint32_t width, uint32_t height, const std::vector<Pixel> &pixelData, const BMPHeader header) {
+  ImageData
+  Generator::generate(uint32_t width, uint32_t height, const std::vector<Pixel> &pixelData, const BMPHeader header) {
     return ImageData(pixelData, header);
   }
 
-  void Generator::writeToFileSystem(const std::string& path, ImageData &data) {
+  void Generator::writeToFileSystem(const std::string &path, ImageData &data) {
     std::ofstream outFile(path, std::ios::binary);
     if (!outFile.is_open()) {
       std::cerr << "Error: Unable to open file." << '\n';
@@ -107,7 +109,7 @@ namespace BMP {
     outFile.write(reinterpret_cast<const char *>(&data.header), sizeof(BMPHeader));
 
     // Write the pixel data to the file
-    for (const Pixel& pixel : data.pixels) {
+    for (const Pixel &pixel: data.pixels) {
       outFile.write(reinterpret_cast<const char *>(&pixel), sizeof(Pixel));
     }
 
@@ -116,7 +118,7 @@ namespace BMP {
   }
 
 
-  std::vector<uint8_t> Reader::readBytes(const std::string& fileName) {
+  std::vector<uint8_t> Reader::readBytes(const std::string &fileName) {
     std::vector<uint8_t> data;
 
     std::ifstream file(fileName, std::ios::binary);
@@ -143,23 +145,149 @@ namespace BMP {
 
     ImageData imageData;
 
-    data.erase(data.begin(), data.begin() +2);
+    //erased the filetype chars
+    data.erase(data.begin(), data.begin() + 2);
+
+    //fileSize
     numsToCalculate.push_back(data[0]);
     numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
 
-    int number = calculateNumberInBytes(numsToCalculate);
+    //reserved get deleted
+    data.erase(data.begin(), data.begin() + 4);
 
-    std::cout << number;
+    imageData.header.fileSize = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
 
+    //offset
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.offset = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+    //headersize
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.headerSize = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+
+    //width
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.width = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+    //height
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.height = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+    //planes
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
     data.erase(data.begin(), data.begin() + 2);
+
+    imageData.header.planes = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+    // bits per pixel
+    data.erase(data.begin(), data.begin() + 2);
+
+    //compression
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.compression = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+    //data size
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.dataSize = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+
+    //horizontal resolution
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.horizontalResolution = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+    //vertical resolution
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.verticalResolution = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+    //color used
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.colorsUsed = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+    //important colors
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+    numsToCalculate.push_back(data[2]);
+    numsToCalculate.push_back(data[3]);
+    data.erase(data.begin(), data.begin() + 4);
+
+    imageData.header.importantColors = calculateNumberInBytes(numsToCalculate);
+    numsToCalculate.clear();
+
+    print(data);
+
+    //print
+    std::cout << "Read header: " << imageData.header << '\n';
 
     return imageData;
   }
-  void Reader::print(std::vector<uint8_t> &data){
-    for (uint8_t a: data){
+
+  void Reader::print(std::vector<uint8_t> &data) {
+    for (uint8_t a: data) {
       Reader::printBinary(a);
       std::cout << " ";
     }
+    std::cout << '\n';
   }
 
   void Reader::printBinary(uint8_t num) {
@@ -187,11 +315,11 @@ namespace BMP {
   }*/
 
   int Reader::calculateNumberInBytes(std::vector<uint8_t> nums) {
-    //doesnt work
+    //this method should calculate the result number from index 0 lsb to msb
     int result = 0;
 
-    for(int i = 0; i < nums.size(); i++){
-      result += nums[i];
+    for (int i = 0; i < nums.size(); i++) {
+      result += nums[i] << i * 8;
     }
     return result;
   }
