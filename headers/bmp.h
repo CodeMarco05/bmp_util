@@ -45,24 +45,33 @@ namespace BMP {
 
 
   struct ImageData {
-    ImageData(std::vector<Pixel> pixels, BMPHeader header) : pixels(std::move(pixels)), header(header) {}
     std::vector<Pixel> pixels;
     BMPHeader header;
+    ImageData(std::vector<Pixel> pixels, BMPHeader header) : pixels(std::move(pixels)), header(header) {}
+    ImageData(){};
   };
 
   class Generator {
   public:
     static ImageData generate(uint32_t width,
                               uint32_t height, const std::vector<Pixel> &pixelData);
+    static ImageData generate(uint32_t width, uint32_t height, const std::vector<Pixel> &pixelData, const BMPHeader header);
+    static void writeToFileSystem(const std::string& path, ImageData &data);
+
+  private:
+    static bool checkPixelDimensions(uint32_t width, uint32_t height, const std::vector<Pixel> &pixelData);
   };
 
   class Reader {
   public:
     static std::vector<uint8_t> readBytes(const std::string &filename);
 
-    static void completeRead(const std::string &filename, std::vector<Pixel> *pixels, BMPHeader *header);
+    static ImageData completeRead(const std::string filename);
 
   private:
-    static int calculateNumberInBytes(std::vector<uint8_t> nums);
+    static int calculateNumberInBytes(std::vector<uint8_t> begin);
+
+    static void print(std::vector<uint8_t> &data);
+    static void printBinary(uint8_t num);
   };
 }  // namespace BMP

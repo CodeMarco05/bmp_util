@@ -1,6 +1,7 @@
 #include "../headers/bmp.h"
 
 #include <fstream>
+#include <memory>
 
 namespace BMP {
 
@@ -41,9 +42,13 @@ namespace BMP {
     os << "}";
     return os;
   }
-
   ImageData Generator::generate(uint32_t width,
                            uint32_t height, const std::vector<Pixel> &pixelData) {
+    bool check = checkPixelDimensions(width, height, pixelData);
+    if(!check){
+      return ImageData();
+    }
+
     // Calculate the size of the pixel data
     const uint32_t dataSize = width * height * 3; // 3 bytes per pixel (RGB)
 
@@ -59,7 +64,8 @@ namespace BMP {
     header.height = height;
     header.dataSize = dataSize;
 
-    ImageData data = ImageData(pixelData, header);
+
+    ImageData data(pixelData, header);
     return data;
 
     /*// Open the output file
@@ -79,6 +85,35 @@ namespace BMP {
     outFile.close();*/
   }
 
+  bool Generator::checkPixelDimensions(uint32_t width, uint32_t height, const std::vector<Pixel> &pixelData) {
+    if(width*height == pixelData.size()){
+      return true;
+    }
+    return false;
+  }
+
+  ImageData Generator::generate(uint32_t width, uint32_t height, const std::vector<Pixel> &pixelData, const BMPHeader header) {
+    return ImageData(pixelData, header);
+  }
+
+  void Generator::writeToFileSystem(const std::string& path, ImageData &data) {
+    std::ofstream outFile(path, std::ios::binary);
+    if (!outFile.is_open()) {
+      std::cerr << "Error: Unable to open file." << '\n';
+      exit(1);
+    }
+
+    // Write the BMP header to the file
+    outFile.write(reinterpret_cast<const char *>(&data.header), sizeof(BMPHeader));
+
+    // Write the pixel data to the file
+    for (const Pixel& pixel : data.pixels) {
+      outFile.write(reinterpret_cast<const char *>(&pixel), sizeof(Pixel));
+    }
+
+    // Close the output file
+    outFile.close();
+  }
 
 
   std::vector<uint8_t> Reader::readBytes(const std::string& fileName) {
@@ -88,7 +123,7 @@ namespace BMP {
 
     if (!file.is_open()) {
       std::cerr << "Unanble to open file: " << fileName << '\n';
-      return data;
+      exit(1);
     }
 
     uint8_t byte;
@@ -101,7 +136,39 @@ namespace BMP {
     return data;
   }
 
-  void Reader::completeRead(const std::string& filename,
+  ImageData Reader::completeRead(const std::string filename) {
+    std::vector<uint8_t> data = readBytes(filename);
+
+    std::vector<uint8_t> numsToCalculate;
+
+    ImageData imageData;
+
+    data.erase(data.begin(), data.begin() +2);
+    numsToCalculate.push_back(data[0]);
+    numsToCalculate.push_back(data[1]);
+
+    int number = calculateNumberInBytes(numsToCalculate);
+
+    std::cout << number;
+
+    data.erase(data.begin(), data.begin() + 2);
+
+    return imageData;
+  }
+  void Reader::print(std::vector<uint8_t> &data){
+    for (uint8_t a: data){
+      Reader::printBinary(a);
+      std::cout << " ";
+    }
+  }
+
+  void Reader::printBinary(uint8_t num) {
+    for (int i = sizeof(num) * 8 - 1; i >= 0; --i) {
+      std::cout << ((num >> i) & 1);
+    }
+  }
+
+  /*void Reader::completeRead(const std::string& filename,
                             std::vector<Pixel> *pixels, BMPHeader *header) {
 
     std::vector<uint8_t> data = readBytes(filename);
@@ -117,14 +184,16 @@ namespace BMP {
 
     // iterate over the elements given and 2^0 if 1 2^1 if 1 and so on. add all
     // together
-  }
+  }*/
 
   int Reader::calculateNumberInBytes(std::vector<uint8_t> nums) {
-    int sum = 0;
-    for (int i = 0; i < nums.size(); ++i) {
-      sum += (nums[i] << (8 * i));
+    //doesnt work
+    int result = 0;
+
+    for(int i = 0; i < nums.size(); i++){
+      result += nums[i];
     }
-    return sum;
+    return result;
   }
 
-  } // namespace BMP
+} // namespace BMP

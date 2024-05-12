@@ -18,15 +18,11 @@ int main(int argc, char **argv) {
 
   BMP::ImageData data = BMP::Generator::generate(width, height, pixelData);
 
-  BMP::BMPHeader head = data.header;
-  std::vector<BMP::Pixel> pixels = data.pixels;
 
-  std::cout << pixels;
+  BMP::Generator::writeToFileSystem("../output/out.bmp", data);
 
 
-  BMP::BMPHeader header;
-  std::vector<BMP::Pixel> dataRead;
-  //BMP::Reader::completeRead(args.inputDir, &dataRead, &header);
+  BMP::ImageData image = BMP::Reader::completeRead("../output/out.bmp");
 
   return 0;
 }
