@@ -1,6 +1,7 @@
 #include "../headers/bmp.h"
 #include <iostream>
 #include <vector>
+#include <cstdint>
 
 
 int main(int argc, char **argv) {

@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <memory>
+#include <cstdint>
 
 namespace BMP {
 
@@ -274,7 +275,7 @@ namespace BMP {
     imageData.header.importantColors = calculateNumberInBytes(numsToCalculate);
     numsToCalculate.clear();
 
-    print(data);
+    //print(data);
 
     //print
     std::cout << "Read header: " << imageData.header << '\n';

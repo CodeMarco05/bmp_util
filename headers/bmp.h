@@ -4,6 +4,7 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <cstdint>
 
 namespace BMP {
 // Define the BMP header structure
