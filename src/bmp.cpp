@@ -275,7 +275,7 @@ namespace BMP {
     imageData.header.importantColors = calculateNumberInBytes(numsToCalculate);
     numsToCalculate.clear();
 
-    print(data);
+    //print(data);
     //std::cout << "Length: " << sizeof(data)/sizeof(data[0]) << '\n';
 
     //std::cout << "Length: " << data.size() << '\n';
@@ -299,6 +299,8 @@ namespace BMP {
         data[i+2]
       ));
     }
+
+    imageData.pixels = pixels_vector;
   }
 
   void Reader::print(std::vector<uint8_t> &data) {
