@@ -275,12 +275,30 @@ namespace BMP {
     imageData.header.importantColors = calculateNumberInBytes(numsToCalculate);
     numsToCalculate.clear();
 
-    //print(data);
+    print(data);
+    //std::cout << "Length: " << sizeof(data)/sizeof(data[0]) << '\n';
+
+    //std::cout << "Length: " << data.size() << '\n';
 
     //print
-    std::cout << "Read header: " << imageData.header << '\n';
+    //std::cout << "Read header: " << imageData.header << '\n';
+
+    //TODO read the pixeldata 
+
+    readPixels(imageData, data);
 
     return imageData;
+  }
+
+  void Reader::readPixels(BMP::ImageData &imageData, std::vector<uint8_t> data){
+    std::vector<BMP::Pixel> pixels_vector;
+    for(int i = 0; i < data.size(); i+=3){
+      pixels_vector.push_back(BMP::Pixel(
+        data[i],
+        data[i+1],
+        data[i+2]
+      ));
+    }
   }
 
   void Reader::print(std::vector<uint8_t> &data) {

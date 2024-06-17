@@ -71,6 +71,7 @@ namespace BMP {
 
   private:
     static int calculateNumberInBytes(std::vector<uint8_t> nums);
+    static void readPixels(ImageData &imageData, std::vector<uint8_t> data);
 
     static void print(std::vector<uint8_t> &data);
     static void printBinary(uint8_t num);

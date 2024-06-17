@@ -17,12 +17,14 @@ int main(int argc, char **argv) {
   pixelData[136].green = 0;
   pixelData[136].blue = 0;
 
+  pixelData[0].blue = 0;
+
   BMP::ImageData data = BMP::Generator::generate(width, height, pixelData);
 
 
   BMP::Generator::writeToFileSystem("../output/out.bmp", data);
 
-  std::cout << "Header: " << data.header << '\n';
+  //std::cout << "Header: " << data.header << '\n';
 
 
   BMP::ImageData image = BMP::Reader::completeRead("../output/out.bmp");
