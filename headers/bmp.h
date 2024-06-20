@@ -57,6 +57,7 @@ namespace BMP {
     static ImageData generate(uint32_t width,
                               uint32_t height, const std::vector<Pixel> &pixelData);
     static ImageData generate(uint32_t width, uint32_t height, const std::vector<Pixel> &pixelData, const BMPHeader header);
+    static ImageData generate(uint32_t width, uint32_t height, const std::vector<std::vector<Pixel>>& pixelData);
     static void writeToFileSystem(const std::string& path, ImageData &data);
 
   private:

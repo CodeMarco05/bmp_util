@@ -87,6 +87,34 @@ namespace BMP {
     outFile.close();*/
   }
 
+  ImageData Generator::generate(uint32_t width, uint32_t height, const std::vector<std::vector<Pixel>>& pixelData) {
+    // Check if the dimensions of the pixel data match the specified width and height
+    if (pixelData.size() != height || pixelData[0].size() != width) {
+      return ImageData();
+    }
+
+    // Calculate the size of the pixel data
+    const uint32_t dataSize = width * height * 3; // 3 bytes per pixel (RGB)
+
+    // Flatten the two-dimensional pixel data into a one-dimensional vector
+    std::vector<Pixel> flattenedPixels;
+    for (const auto& row : pixelData) {
+      flattenedPixels.insert(flattenedPixels.end(), row.begin(), row.end());
+    }
+
+    // Create the BMP header
+    BMPHeader header;
+    header.fileSize = sizeof(BMPHeader) + dataSize;
+    header.offset = sizeof(BMPHeader);
+    header.width = width;
+    header.height = height;
+    header.dataSize = dataSize;
+
+    // Create the ImageData object
+    ImageData data(flattenedPixels, header);
+    return data;
+  }
+
   bool Generator::checkPixelDimensions(uint32_t width, uint32_t height, const std::vector<Pixel> &pixelData) {
     if (width * height == pixelData.size()) {
       return true;

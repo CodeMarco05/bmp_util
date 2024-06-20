@@ -11,6 +11,9 @@ int main(int argc, char **argv) {
 
   //cmd::arguments args = cmd::getCommandLineArguments(&argc, argv);
 
+  //make a two dimensional array of pixels
+  std::vector<std::vector<BMP::Pixel>> pixelArray(height, std::vector<BMP::Pixel>(width, {0xFF, 0xFF, 0xFF}));
+
 
   std::vector<BMP::Pixel> pixelData(width * height, {0xFF, 0xFF, 0xFF});
 
@@ -27,7 +30,4 @@ int main(int argc, char **argv) {
 
   return 0;
 }
-
-
-
 
