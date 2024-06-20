@@ -21,11 +21,7 @@ int main(int argc, char **argv) {
 
   BMP::ImageData data = BMP::Generator::generate(width, height, pixelData);
 
-
   BMP::Generator::writeToFileSystem("../output/out.bmp", data);
-
-  std::cout << "Header: " << data.pixels << '\n';
-
 
   BMP::ImageData image = BMP::Reader::completeRead("../output/out.bmp");
 
